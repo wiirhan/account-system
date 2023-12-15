@@ -87,6 +87,50 @@ impl AccountSystem {
 
         Ok(())
     }
+
+    // 找到最大利润的交易
+    pub fn find_max_profit_transaction(&mut self, transactions: &[Transaction]) -> Transaction {
+        let mut max_profit = 0.0;
+        let mut max_profit_transaction = Transaction { transfers: vec![] };
+
+        for transaction in transactions {
+            let profit = self.compute_transaction_profit(&transaction);
+            if profit > max_profit {
+                max_profit = profit;
+                max_profit_transaction = transaction.clone();
+            } else if profit == max_profit {
+                // 如果利润相同，选择交易次数最少的交易
+                if transaction.transfers.len() < max_profit_transaction.transfers.len() {
+                    max_profit_transaction = transaction.clone();
+                }
+            }
+        }
+
+        max_profit_transaction
+    }
+
+    // 计算交易利润，如果交易失败，利润为0
+    fn compute_transaction_profit(&self, transaction: &Transaction) -> f64 {
+        let mut profit = 0.0;
+        for transfer in &transaction.transfers {
+            let from_account_index = self
+                .accounts
+                .iter()
+                .position(|acc| acc.user == transfer.from);
+            let to_account_index = self.accounts.iter().position(|acc| acc.user == transfer.to);
+
+            if let Some(from_index) = from_account_index {
+                let total_amount = transfer.amount + transfer.fee;
+                if let Some(_) = to_account_index {
+                    if self.accounts[from_index].balance >= total_amount {
+                        profit += transfer.fee;
+                    }
+                }
+            }
+        }
+
+        profit
+    }
 }
 
 #[cfg(test)]
@@ -223,5 +267,131 @@ mod tests {
             account_system.execute_transaction(&transaction),
             Err("Insufficient funds for transfer")
         );
+    }
+
+    #[test]
+    fn test_compute_transaction_profit() {
+        let mut account_system = AccountSystem::new();
+        account_system.get_account().unwrap();
+
+        let transaction = Transaction {
+            transfers: vec![
+                Transfer {
+                    from: "A".to_string(),
+                    to: "B".to_string(),
+                    amount: 0.1,
+                    fee: 0.0,
+                },
+                Transfer {
+                    from: "B".to_string(),
+                    to: "C".to_string(),
+                    amount: 9.0,
+                    fee: 1.0,
+                },
+                Transfer {
+                    from: "C".to_string(),
+                    to: "E".to_string(),
+                    amount: 9.0,
+                    fee: 0.0,
+                },
+            ],
+        };
+
+        assert_eq!(account_system.compute_transaction_profit(&transaction), 1.0);
+    }
+
+    #[test]
+    fn test_compute_transaction_profit_insufficient_funds() {
+        let mut account_system = AccountSystem::new();
+        account_system.get_account().unwrap();
+
+        let transaction = Transaction {
+            transfers: vec![Transfer {
+                from: "A".to_string(),
+                to: "B".to_string(),
+                amount: 100.0,
+                fee: 0.0,
+            }],
+        };
+
+        assert_eq!(account_system.compute_transaction_profit(&transaction), 0.0);
+    }
+
+    #[test]
+    fn test_find_max_profit_transaction() {
+        let mut account_system = AccountSystem::new();
+        account_system.get_account().unwrap();
+
+        let transactions = vec![
+            Transaction {
+                transfers: vec![
+                    Transfer {
+                        from: "A".to_string(),
+                        to: "B".to_string(),
+                        amount: 0.1,
+                        fee: 0.0,
+                    },
+                    Transfer {
+                        from: "B".to_string(),
+                        to: "C".to_string(),
+                        amount: 9.0,
+                        fee: 1.0,
+                    },
+                    Transfer {
+                        from: "C".to_string(),
+                        to: "E".to_string(),
+                        amount: 9.0,
+                        fee: 0.0,
+                    },
+                    Transfer {
+                        from: "E".to_string(),
+                        to: "D".to_string(),
+                        amount: 9.0,
+                        fee: 10.0,
+                    },
+                ],
+            },
+            Transaction {
+                transfers: vec![
+                    Transfer {
+                        from: "A".to_string(),
+                        to: "B".to_string(),
+                        amount: 0.1,
+                        fee: 0.0,
+                    },
+                    Transfer {
+                        from: "B".to_string(),
+                        to: "C".to_string(),
+                        amount: 9.0,
+                        fee: 1.0,
+                    },
+                ],
+            },
+            Transaction {
+                transfers: vec![
+                    Transfer {
+                        from: "A".to_string(),
+                        to: "B".to_string(),
+                        amount: 0.1,
+                        fee: 0.0,
+                    },
+                    Transfer {
+                        from: "B".to_string(),
+                        to: "C".to_string(),
+                        amount: 9.0,
+                        fee: 1.0,
+                    },
+                    Transfer {
+                        from: "C".to_string(),
+                        to: "E".to_string(),
+                        amount: 9.0,
+                        fee: 0.0,
+                    },
+                ],
+            },
+        ];
+
+        let max_profit_transaction = account_system.find_max_profit_transaction(&transactions);
+        assert_eq!(max_profit_transaction.transfers.len(), 4);
     }
 }

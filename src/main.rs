@@ -10,11 +10,13 @@ fn main() {
 
     let transactions = get_transaction().unwrap();
 
-    transactions.into_iter().for_each(|transaction| {
-        if let Err(e) = account_system.execute_transaction(&transaction) {
-            eprintln!("Error executing transaction: {}", e);
-        }
-    });
+    let max_profit_transaction = account_system.find_max_profit_transaction(&transactions);
+
+    println!("Maximum profit transactions:");
+    println!("{:?}", max_profit_transaction);
+    if let Err(e) = account_system.execute_transaction(&max_profit_transaction) {
+        eprintln!("Error executing transaction: {}", e);
+    }
 
     account_system.display_accounts();
 }
