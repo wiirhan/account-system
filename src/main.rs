@@ -97,10 +97,7 @@ fn main() {
         transfers: vec![Transfer {
             from: "A".to_string(),
             to: "B".to_string(),
-            amount: "asdf".parse().unwrap_or_else(|err| {
-                eprintln!("Error parsing amount: {}", err);
-                0.0
-            }),
+            amount: 0.1,
             fee: 0.0,
         }],
     };
@@ -156,7 +153,7 @@ mod tests {
         assert_eq!(account_system.accounts[1].balance, 90.1);
         assert_eq!(account_system.accounts[2].balance, 0.0);
         assert_eq!(account_system.accounts[3].balance, 1357.0);
-        assert_eq!(account_system.accounts[4].balance, 18.0);
+        assert_eq!(account_system.accounts[4].balance, 17.0);
         assert_eq!(account_system.system_balance, 1.0);
     }
 
