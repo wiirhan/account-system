@@ -2,7 +2,7 @@ use serde::Deserialize;
 use serde_json;
 use std::io::{self};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Transfer {
     pub from: String,
     pub to: String,
@@ -10,7 +10,7 @@ pub struct Transfer {
     pub fee: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Transaction {
     pub transfers: Vec<Transfer>,
 }

@@ -1,0 +1,54 @@
+[
+  [
+    {
+      "from": "A",
+      "to": "B",
+      "amount": 0.1,
+      "fee": 0.0
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "amount": 9.0,
+      "fee": 1.0
+    },
+    {
+      "from": "E",
+      "to": "C",
+      "amount": 9.0,
+      "fee": 8.0
+    },
+    {
+      "from": "D",
+      "to": "E",
+      "amount": 10.0,
+      "fee": 5.0
+    }
+  ],
+  [
+    {
+      "from": "D",
+      "to": "A",
+      "amount": 11,
+      "fee": 0.0
+    },
+    {
+      "from": "B",
+      "to": "D",
+      "amount": 10.0,
+      "fee": 12.0
+    },
+    {
+      "from": "E",
+      "to": "C",
+      "amount": 9.0,
+      "fee": 8.0
+    },
+    {
+      "from": "A",
+      "to": "E",
+      "amount": 5.0,
+      "fee": 2.0
+    }
+  ]
+]
