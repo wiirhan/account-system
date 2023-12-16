@@ -9,3 +9,5 @@
   cd target/release
   ./account-system
 ```
+
+修改`transaction.json` 文件可以调整交易内容,`account_data.json` 文件可以修改初始数据
